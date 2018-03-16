@@ -289,7 +289,7 @@ def record_successful_deploy():
         ) % {
             'virtualenv_current': env.virtualenv_current,
             'user': env.user,
-            'environment': env.environment,
+            'environment': env.deploy_env,
             'url': env.deploy_metadata.diff_url,
             'minutes': str(int(delta.total_seconds() // 60))
         })
@@ -396,12 +396,12 @@ def copy_tf_localsettings():
 @roles(ROLES_FORMPLAYER)
 def copy_formplayer_properties():
     sudo('mkdir -p {}'.format(os.path.join(env.code_root, FORMPLAYER_BUILD_DIR)))
-    sudo(
-        'cp {} {}'.format(
-            os.path.join(env.code_current, FORMPLAYER_BUILD_DIR, 'application.properties'),
-            os.path.join(env.code_current, FORMPLAYER_BUILD_DIR, 'sentry.properties'),
-            os.path.join(env.code_root, FORMPLAYER_BUILD_DIR)
-        ))
+    for filename in ['application.properties', 'sentry.properties']:
+        sudo(
+            'cp {} {}'.format(
+                os.path.join(env.code_current, FORMPLAYER_BUILD_DIR, filename),
+                os.path.join(env.code_root, FORMPLAYER_BUILD_DIR)
+            ))
 
 
 @parallel
